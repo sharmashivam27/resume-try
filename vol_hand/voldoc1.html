@@ -73,17 +73,21 @@
         <a name="topofpage"></a>
           <p>If I say you wanted to do gesture Recognition in Python, it sounds like difficult and tedious task but recently I came across a very good library called MediaPipe which makes things simple for us. This library is very easy to use and to do innovative things which otherwise we can find difficult if we have to code it from scratch.
 In this article I will be using it with python but this library also supports many other platforms (Android,iOS etc.).
-Hands Module of Mediapipe library to make 2 python cool projects. One of which will be used to make second one.
+<br>I will use Hands Module of Mediapipe library to make 2 cool python projects. One of which will be used to make second one.
 For volume control using hands, first part is to correctly read the hand gestures from user .
 Hands module is used  to get important landmarks of hand. When we supply an image of hand to hands module then it returns 21 point vector which shows the 21 important landmarks present in hand.</p>
 
-<p>The image is taken from Mediapipe’s official website. Please check here to view full working details.</p>
+<img src="https://google.github.io/mediapipe/images/mobile/hand_landmarks.png" style="width: 80%;
+height: 60% ;">
+<br><br>
+<p>The image is taken from <a href="https://google.github.io/mediapipe/solutions/hands.html ">Mediapipe’s official website</a>. Please check here to view full working details.</p>
 
 <p>The points are used to recognize the position of hand landamrks along with position of fingers so, once you have the vector you can use it for any project from your creativity</p>
 
+
 <p>To use MediaPipe library in Phyton we first have to install it using command:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip install mediapipe To control system volume using hand gestures we first make a module which can read and display landmarks and help us make our project modularized.
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip install mediapipe 
 </code></pre></div></div>
 
 <p>1.Now ,import the needed packages</p>
@@ -91,7 +95,7 @@ Hands module is used  to get important landmarks of hand. When we supply an imag
 <figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">import</span> <span class="n">cv2</span> 
 <span class="n">import</span> <span class="n">mediapipe</span> <span class="n">as</span> <span class="n">mp</span></code></pre></figure>
 
-<p>2).We start by writing our class</p>
+<p>2.We start by writing our class</p>
 
 <figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="n">handDetector</span><span class="p">():</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="no">False</span><span class="p">,</span><span class="n">maxHands</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">detectionCon</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">trackCon</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
@@ -104,22 +108,33 @@ Hands module is used  to get important landmarks of hand. When we supply an imag
         <span class="nb">self</span><span class="p">.</span><span class="nf">hands</span><span class="o">=</span><span class="nb">self</span><span class="p">.</span><span class="nf">mpHands</span><span class="o">.</span><span class="no">Hands</span><span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="nf">mode</span><span class="p">,</span><span class="nb">self</span><span class="p">.</span><span class="nf">maxHands</span><span class="p">,</span><span class="nb">self</span><span class="p">.</span><span class="nf">detectionCon</span><span class="p">,</span><span class="nb">self</span><span class="p">.</span><span class="nf">trackCon</span><span class="p">)</span>
         <span class="nb">self</span><span class="p">.</span><span class="nf">mpDraw</span><span class="o">=</span><span class="n">mp</span><span class="p">.</span><span class="nf">solutions</span><span class="p">.</span><span class="nf">drawing_utils</span></code></pre></figure>
 
-<p>parameters-&gt;
-maxHands : The number of hands you want mediapipe to detect. If there are more than one mediapipe will return array  of hands and each element of array(which represents hand) has its 21 landmark points.</p>
+<p><u><b>Parameters-&gt;</b></u><br><br>
 
-<p>detectionCon,trackCon : When mediapipe is started it starts by detecting hands, after that it tracks the hand If tracking confidence(trackCon) goes down then it switches back to hand detection
+  <b><u>  maxHands : </u></b>The number of hands you want mediapipe to detect. If there are more than one mediapipe will return array  of hands and each element of array(which represents hand) has its 21 landmark points.</p>
+
+<p><u><b>detectionCon,trackCon : </b></u>When mediapipe is started it starts by detecting hands, after that it tracks the hand If tracking confidence(trackCon) goes down then it switches back to hand detection
 Next ,we create instance of hand module and drawing utility which helps us draw 21 landmarks and lines connecting those landmarks.
 All the above parameters are needed by hands class so we pass it in the next line.</p>
 
-<p>c
-function parameters:
-frame is the image from camera
-A Boolean parameter draw is used to decide whether to draw parameters on hand or not.</p>
+<p>3.The next function we define is :<br>
+  <figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">findHands</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span><span class="n">frame</span><span class="p">,</span><span class="n">draw</span><span class="o">=</span><span class="no">True</span><span class="p">):</span>
+    <span class="n">imageRGB</span><span class="o">=</span><span class="n">cv2</span><span class="p">.</span><span class="nf">cvtColor</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span><span class="n">cv2</span><span class="o">.</span><span class="no">COLOR_BGR2RGB</span><span class="p">)</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">results</span><span class="o">=</span><span class="nb">self</span><span class="p">.</span><span class="nf">hands</span><span class="p">.</span><span class="nf">process</span><span class="p">(</span><span class="n">imageRGB</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">self</span><span class="p">.</span><span class="nf">results</span><span class="p">.</span><span class="nf">multi_hand_landmarks</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">handLms</span> <span class="k">in</span> <span class="nb">self</span><span class="p">.</span><span class="nf">results</span><span class="p">.</span><span class="nf">multi_hand_landmarks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ss">draw:
+                </span><span class="nb">self</span><span class="p">.</span><span class="nf">mpDraw</span><span class="p">.</span><span class="nf">draw_landmarks</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span><span class="n">handLms</span><span class="p">,</span><span class="nb">self</span><span class="p">.</span><span class="nf">mpHands</span><span class="o">.</span><span class="no">HAND_CONNECTIONS</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">frame</span>  </code></pre></figure>
+
+<u><b>Function parameters:</b></u><br><br><br>
+<b><u>frame</u></b> is the image from camera.<br><br>
+A Boolean parameter <b><u>draw</u></b> is used to decide whether to draw parameters on hand or not.</p>
 
 <p>Image is then converted in RGB using RGB function of OpenCv library
-The next line, is the line which does most of the work 
-self.results=self.hands.process(imageRGB)</p>
-
+  <br><br>The next line, is the line which does most of the work 
+  self.results=self.hands.process(imageRGB)</p>
+  
 <p>This line gets all the landmarks from the image.
 Next,if we find hand and landmarks are recognized we draw it on the frame(image).</p>
 
@@ -138,15 +153,15 @@ Next,if we find hand and landmarks are recognized we draw it on the frame(image)
                     <span class="n">cv2</span><span class="p">.</span><span class="nf">circle</span><span class="p">(</span><span class="n">frame</span><span class="p">,(</span><span class="n">cx</span><span class="p">,</span><span class="n">cy</span><span class="p">),</span><span class="mi">5</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span> <span class="p">),</span><span class="n">cv2</span><span class="o">.</span><span class="no">FILLED</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">lmlist</span>    </code></pre></figure>
 
-<p>Function Parameters:
-frame :the image from camera
-handno :which hand to look if there are multiple hands encountered in the image
-draw:Boolean parameter to decide whether to draw points and landmarks on image</p>
+<p><b><u>Function Parameters:</u></b><br><br>
+<b><u>frame :</u></b> The image from camera<br><br>
+<b><u>handno :</u></b> Which hand to look if there are multiple hands encountered in the image<br><br>
+<b><u>draw :</u></b> Boolean parameter to decide whether to draw points and landmarks on image</p>
 
-<p>From the landmarks from findHands function we get landmarks for the hand we require(default is zero i.e. first hand encountered)
-We enumerate through landmarks to give them id so that we can  refer to specific one landmark id when required.
-Next we calculate the co-ordinate of each landmark (pixel location) according to the height and width of the frame so that we get exact x and y co-ordinate of the pixel of the landmark and not just ratio of image dimensions.</p>
-
+<p>From the landmarks (which we generate using findHands function ) we get landmarks for the hand we require(default is zero i.e. first hand encountered)
+  We enumerate through landmarks to give them id so that we can  refer to specific one landmark id when required.
+  Next we calculate the co-ordinate of each landmark (pixel location) according to the height and width of the frame so that we get exact x and y co-ordinate of the pixel of the landmark and not just ratio of image dimensions.</p>
+            
 <p>We return the list of landmarks with co-ordinates and id of the landmark.
 The 0th index represents id of the landmark.
 1st index represents the c xo-ordinate of the landmark.
@@ -154,9 +169,9 @@ The 0th index represents id of the landmark.
 
 <p>That’s the work for one custom class. All we need is to pass image to function findHands and the resultant image to next function i.e. findPosition to get list with landmarks.</p>
 
-<p>Volume control:
+<p><b><u>Volume control:</u></b><br><br>
 To control the volume we need to install another python package named pycaw.This library handles controlling of system volume.
-1.We start by importing the custom class that we created in the previous section and other required packages</p>
+<br><br>1) We start by importing the custom class that we created in the previous section and other required packages</p>
 
 <figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="k">import</span> <span class="nx">cv2</span>
 <span class="k">import</span> <span class="nx">time</span>
@@ -264,7 +279,7 @@ Next line of code converts values proportionate for our volume level/range.</p>
 
 <figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">vol</span><span class="o">=</span><span class="nx">np</span><span class="p">.</span><span class="nx">interp</span><span class="p">(</span><span class="nx">length</span><span class="p">,[</span><span class="mi">20</span><span class="p">,</span><span class="mi">180</span><span class="p">],[</span><span class="nx">minVol</span><span class="p">,</span><span class="nx">maxVol</span><span class="p">])</span></code></pre></figure>
 
-<p>Similarly we prepare volBAr and volPer to show the bar of volume and its percentage</p>
+<p>Similarly we prepare volBar and volPer to show the bar of volume and its percentage</p>
 
 <figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">volBar</span><span class="o">=</span><span class="nx">np</span><span class="p">.</span><span class="nx">interp</span><span class="p">(</span><span class="nx">length</span><span class="p">,[</span><span class="mi">20</span><span class="p">,</span><span class="mi">180</span><span class="p">],[</span><span class="mi">400</span><span class="p">,</span><span class="mi">150</span><span class="p">])</span>
 <span class="nx">volPer</span><span class="o">=</span><span class="nx">np</span><span class="p">.</span><span class="nx">interp</span><span class="p">(</span><span class="nx">length</span><span class="p">,[</span><span class="mi">20</span><span class="p">,</span><span class="mi">180</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">])</span></code></pre></figure>
@@ -294,7 +309,7 @@ Next line of code converts values proportionate for our volume level/range.</p>
 
 <p>The idea of the article was to introduce this super awesome library and now the rest is up to your creativity .You can find code for the project here.</p>
 
-<p>Thanks to Murtaza Hasan from where I came to know about this library. This project is also inspired by his projects and videos. You can check his  website for some cool projects.</p>
+<p>Thanks to Murtaza Hasan from where I came to know about this library. This project is also inspired by his projects and videos. You can check his <a href="https://www.computervision.zone/">website</a> for some cool projects.</p>
 
 
         </section>
