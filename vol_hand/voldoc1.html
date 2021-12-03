@@ -1,0 +1,392 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <!-- (1) Optimize for mobile versions: http://goo.gl/EOpFl -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- (1) force latest IE rendering engine: bit.ly/1c8EiC9 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Hand Gesture based Volume Control </title>
+  
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+
+  <meta property="og:image" content="images/desktop.JPG" />
+  <meta property="og:type" content="blog" />
+
+ <link rel="stylesheet" href="css/ccs.css">
+  <link href="css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
+  <link rel="stylesheet" type="text/css" media="print" href="css/print.css" />
+</head>
+
+  <body itemscope itemtype="http://schema.org/Article">
+    <!-- header start -->
+
+
+  <!-- <a href="http://localhost:4000" class="logo-readium"><span class="logo" style="background-image: url(images/df_logo.jpg)"></span></a> -->
+
+<!-- header end -->
+
+<body itemscope itemtype="http://schema.org/Article">
+  <!-- header start -->
+
+
+
+<!-- header end -->
+
+  <main class="content" role="main">
+    <article class="post">
+      
+      <div class="article-image">
+        <div class="post-image-image" style="background-image: url(images/desktop.JPG)">
+          Article Image
+        </div>
+        <div class="post-image-image2" style="background-image: url()">
+          Article Image
+        </div>
+        <div class="post-meta">
+          <h1 class="post-title">Hand Gesture based Volume Control </h1>
+          <div class="cf post-meta-text">
+            <div class="author-image" style="background-image: url(images/author.jpg)">Blog Logo</div>
+            <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person">Shivam Sharma</h4>
+           
+            
+            <!-- , tagged on <span class="post-tag-">, <a href="/tag/"></a></span> -->
+          </div>
+          <div style="text-align:center">
+            <a href="#topofpage" class="topofpage"><i class="fa fa-angle-down"></i></a>
+          </div>
+        </div>
+      </div>
+      
+      <section class="post-content">
+        <div class="post-reading">
+          <span class="post-reading-time"></span> read
+        </div>
+        <a name="topofpage"></a>
+          <p>If I say you wanted to do gesture Recognition in Python, it sounds like difficult and tedious task but recently I came across a very good library called MediaPipe which makes things simple for us. This library is very easy to use and to do innovative things which otherwise we can find difficult if we have to code it from scratch.
+In this article I will be using it with python but this library also supports many other platforms (Android,iOS etc.).
+Hands Module of Mediapipe library to make 2 python cool projects. One of which will be used to make second one.
+For volume control using hands, first part is to correctly read the hand gestures from user .
+Hands module is used  to get important landmarks of hand. When we supply an image of hand to hands module then it returns 21 point vector which shows the 21 important landmarks present in hand.</p>
+
+<p>The image is taken from Mediapipe’s official website. Please check here to view full working details.</p>
+
+<p>The points are used to recognize the position of hand landamrks along with position of fingers so, once you have the vector you can use it for any project from your creativity</p>
+
+<p>To use MediaPipe library in Phyton we first have to install it using command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip install mediapipe To control system volume using hand gestures we first make a module which can read and display landmarks and help us make our project modularized.
+</code></pre></div></div>
+
+<p>1.Now ,import the needed packages</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">import</span> <span class="n">cv2</span> 
+<span class="n">import</span> <span class="n">mediapipe</span> <span class="n">as</span> <span class="n">mp</span></code></pre></figure>
+
+<p>2).We start by writing our class</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="n">handDetector</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="no">False</span><span class="p">,</span><span class="n">maxHands</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">detectionCon</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">trackCon</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="nb">self</span><span class="p">.</span><span class="nf">mode</span><span class="o">=</span><span class="n">mode</span>
+        <span class="nb">self</span><span class="p">.</span><span class="nf">maxHands</span><span class="o">=</span><span class="n">maxHands</span>
+        <span class="nb">self</span><span class="p">.</span><span class="nf">detectionCon</span><span class="o">=</span><span class="n">detectionCon</span>
+        <span class="nb">self</span><span class="p">.</span><span class="nf">trackCon</span><span class="o">=</span><span class="n">trackCon</span>
+
+        <span class="nb">self</span><span class="p">.</span><span class="nf">mpHands</span> <span class="o">=</span> <span class="n">mp</span><span class="p">.</span><span class="nf">solutions</span><span class="p">.</span><span class="nf">hands</span>
+        <span class="nb">self</span><span class="p">.</span><span class="nf">hands</span><span class="o">=</span><span class="nb">self</span><span class="p">.</span><span class="nf">mpHands</span><span class="o">.</span><span class="no">Hands</span><span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="nf">mode</span><span class="p">,</span><span class="nb">self</span><span class="p">.</span><span class="nf">maxHands</span><span class="p">,</span><span class="nb">self</span><span class="p">.</span><span class="nf">detectionCon</span><span class="p">,</span><span class="nb">self</span><span class="p">.</span><span class="nf">trackCon</span><span class="p">)</span>
+        <span class="nb">self</span><span class="p">.</span><span class="nf">mpDraw</span><span class="o">=</span><span class="n">mp</span><span class="p">.</span><span class="nf">solutions</span><span class="p">.</span><span class="nf">drawing_utils</span></code></pre></figure>
+
+<p>parameters-&gt;
+maxHands : The number of hands you want mediapipe to detect. If there are more than one mediapipe will return array  of hands and each element of array(which represents hand) has its 21 landmark points.</p>
+
+<p>detectionCon,trackCon : When mediapipe is started it starts by detecting hands, after that it tracks the hand If tracking confidence(trackCon) goes down then it switches back to hand detection
+Next ,we create instance of hand module and drawing utility which helps us draw 21 landmarks and lines connecting those landmarks.
+All the above parameters are needed by hands class so we pass it in the next line.</p>
+
+<p>c
+function parameters:
+frame is the image from camera
+A Boolean parameter draw is used to decide whether to draw parameters on hand or not.</p>
+
+<p>Image is then converted in RGB using RGB function of OpenCv library
+The next line, is the line which does most of the work 
+self.results=self.hands.process(imageRGB)</p>
+
+<p>This line gets all the landmarks from the image.
+Next,if we find hand and landmarks are recognized we draw it on the frame(image).</p>
+
+<p>4)The second function we are going to define is findPosition</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">findPosition</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span><span class="n">frame</span><span class="p">,</span><span class="n">handno</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">draw</span><span class="o">=</span><span class="no">True</span><span class="p">):</span>
+
+        <span class="n">lmlist</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">self</span><span class="p">.</span><span class="nf">results</span><span class="p">.</span><span class="nf">multi_hand_landmarks</span><span class="p">:</span>
+            <span class="n">myhand</span><span class="o">=</span><span class="nb">self</span><span class="p">.</span><span class="nf">results</span><span class="p">.</span><span class="nf">multi_hand_landmarks</span><span class="p">[</span><span class="n">handno</span><span class="p">]</span>
+            <span class="k">for</span> <span class="nb">id</span><span class="p">,</span><span class="n">lm</span> <span class="k">in</span> <span class="n">enumerate</span><span class="p">(</span><span class="n">myhand</span><span class="p">.</span><span class="nf">landmark</span><span class="p">):</span>
+                <span class="n">h</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="n">frame</span><span class="p">.</span><span class="nf">shape</span>
+                <span class="n">cx</span><span class="p">,</span><span class="n">cy</span><span class="o">=</span><span class="n">int</span><span class="p">(</span><span class="n">lm</span><span class="p">.</span><span class="nf">x</span><span class="o">*</span><span class="n">w</span><span class="p">),</span><span class="n">int</span><span class="p">((</span><span class="n">lm</span><span class="p">.</span><span class="nf">y</span><span class="o">*</span><span class="n">h</span><span class="p">))</span>
+                <span class="n">lmlist</span><span class="p">.</span><span class="nf">append</span><span class="p">([</span><span class="nb">id</span><span class="p">,</span><span class="n">cx</span><span class="p">,</span><span class="n">cy</span><span class="p">])</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">draw</span><span class="p">):</span>            
+                    <span class="n">cv2</span><span class="p">.</span><span class="nf">circle</span><span class="p">(</span><span class="n">frame</span><span class="p">,(</span><span class="n">cx</span><span class="p">,</span><span class="n">cy</span><span class="p">),</span><span class="mi">5</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span> <span class="p">),</span><span class="n">cv2</span><span class="o">.</span><span class="no">FILLED</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">lmlist</span>    </code></pre></figure>
+
+<p>Function Parameters:
+frame :the image from camera
+handno :which hand to look if there are multiple hands encountered in the image
+draw:Boolean parameter to decide whether to draw points and landmarks on image</p>
+
+<p>From the landmarks from findHands function we get landmarks for the hand we require(default is zero i.e. first hand encountered)
+We enumerate through landmarks to give them id so that we can  refer to specific one landmark id when required.
+Next we calculate the co-ordinate of each landmark (pixel location) according to the height and width of the frame so that we get exact x and y co-ordinate of the pixel of the landmark and not just ratio of image dimensions.</p>
+
+<p>We return the list of landmarks with co-ordinates and id of the landmark.
+The 0th index represents id of the landmark.
+1st index represents the c xo-ordinate of the landmark.
+2nd index is the y co-ordinate of the landmark.</p>
+
+<p>That’s the work for one custom class. All we need is to pass image to function findHands and the resultant image to next function i.e. findPosition to get list with landmarks.</p>
+
+<p>Volume control:
+To control the volume we need to install another python package named pycaw.This library handles controlling of system volume.
+1.We start by importing the custom class that we created in the previous section and other required packages</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="k">import</span> <span class="nx">cv2</span>
+<span class="k">import</span> <span class="nx">time</span>
+<span class="k">import</span> <span class="nx">numpy</span> <span class="k">as</span> <span class="nx">np</span>
+<span class="k">import</span> <span class="nx">hand_track_mod</span> <span class="k">as</span> <span class="nx">hd</span>
+<span class="k">import</span> <span class="nx">math</span>
+
+<span class="k">from</span> <span class="nx">ctypes</span> <span class="k">import</span> <span class="nx">cast</span><span class="p">,</span> <span class="nx">POINTER</span>
+<span class="k">from</span> <span class="nx">comtypes</span> <span class="k">import</span> <span class="nx">CLSCTX_ALL</span>
+<span class="k">from</span> <span class="nx">pycaw</span><span class="p">.</span><span class="nx">pycaw</span> <span class="k">import</span> <span class="nx">AudioUtilities</span><span class="p">,</span> <span class="nx">IAudioEndpointVolume</span></code></pre></figure>
+
+<p>2)Height and width of the frame of the camera are then initialized.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">wcam</span><span class="p">,</span><span class="nx">hcam</span><span class="o">=</span><span class="mi">640</span><span class="p">,</span><span class="mi">480</span></code></pre></figure>
+
+<p>3)Next is the standard code for video capture and we set the frame to these height and width.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">ptime</span><span class="o">=</span><span class="mi">0</span></code></pre></figure>
+
+<p>4)we now create an instance of our custom class</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">detector</span><span class="o">=</span><span class="nx">hd</span><span class="p">.</span><span class="nx">handDetector</span><span class="p">(</span><span class="nx">detectionCon</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span></code></pre></figure>
+
+<p>5)Next,we have some initialization of Volume controller</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">devices</span> <span class="o">=</span> <span class="nx">AudioUtilities</span><span class="p">.</span><span class="nx">GetSpeakers</span><span class="p">()</span>
+<span class="kr">interface</span> <span class="o">=</span> <span class="nx">devices</span><span class="p">.</span><span class="nx">Activate</span><span class="p">(</span>
+    <span class="nx">IAudioEndpointVolume</span><span class="p">.</span><span class="nx">_iid_</span><span class="p">,</span> <span class="nx">CLSCTX_ALL</span><span class="p">,</span> <span class="nx">None</span><span class="p">)</span>
+<span class="nx">volume</span> <span class="o">=</span> <span class="nx">cast</span><span class="p">(</span><span class="kr">interface</span><span class="p">,</span> <span class="nx">POINTER</span><span class="p">(</span><span class="nx">IAudioEndpointVolume</span><span class="p">))</span>
+<span class="nx">vol_range</span><span class="o">=</span><span class="nx">volume</span><span class="p">.</span><span class="nx">GetVolumeRange</span><span class="p">()</span></code></pre></figure>
+
+<p>6) volume range of system(acquired using GetVolumeRange Function)  is stored in variables .</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">minVol</span><span class="o">=</span><span class="nx">vol_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nx">maxVol</span><span class="o">=</span><span class="nx">vol_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></code></pre></figure>
+
+<p>7)initial volume is now set to zero ,VolBar is the variable which will show volume in bar and it starts from co-ordinate 400 and volPer is the percentage of volume.(initially zero)</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">vol</span><span class="o">=</span><span class="mi">0</span>
+<span class="nx">volBar</span><span class="o">=</span><span class="mi">400</span>
+<span class="nx">volPer</span><span class="o">=</span><span class="mi">0</span></code></pre></figure>
+
+<p>8)The main volume controller code:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="k">while</span> <span class="nx">True</span><span class="p">:</span>
+    <span class="nx">success</span><span class="p">,</span><span class="nx">img</span><span class="o">=</span><span class="nx">cap</span><span class="p">.</span><span class="nx">read</span><span class="p">()</span>
+    <span class="nx">img</span><span class="o">=</span><span class="nx">detector</span><span class="p">.</span><span class="nx">findHands</span><span class="p">(</span><span class="nx">img</span><span class="p">)</span>
+    <span class="nx">lmlist</span><span class="o">=</span><span class="nx">detector</span><span class="p">.</span><span class="nx">findPosition</span><span class="p">(</span><span class="nx">img</span><span class="p">,</span><span class="nx">draw</span><span class="o">=</span><span class="nx">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">len</span><span class="p">(</span><span class="nx">lmlist</span><span class="p">)</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
+        <span class="nx">x1</span><span class="p">,</span><span class="nx">y1</span><span class="o">=</span><span class="nx">lmlist</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="nx">lmlist</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        <span class="nx">x2</span><span class="p">,</span><span class="nx">y2</span><span class="o">=</span><span class="nx">lmlist</span><span class="p">[</span><span class="mi">8</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="nx">lmlist</span><span class="p">[</span><span class="mi">8</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        <span class="nx">cx</span><span class="p">,</span><span class="nx">cy</span><span class="o">=</span><span class="p">(</span><span class="nx">x1</span><span class="o">+</span><span class="nx">x2</span><span class="p">)</span><span class="c1">//2,(y1+y2)//2</span>
+
+        <span class="nx">cv2</span><span class="p">.</span><span class="nx">circle</span><span class="p">(</span><span class="nx">img</span><span class="p">,(</span><span class="nx">x1</span><span class="p">,</span><span class="nx">y1</span><span class="p">),</span><span class="mi">10</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">),</span><span class="nx">cv2</span><span class="p">.</span><span class="nx">FILLED</span><span class="p">)</span>
+        <span class="nx">cv2</span><span class="p">.</span><span class="nx">circle</span><span class="p">(</span><span class="nx">img</span><span class="p">,(</span><span class="nx">x2</span><span class="p">,</span><span class="nx">y2</span><span class="p">),</span><span class="mi">10</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">),</span><span class="nx">cv2</span><span class="p">.</span><span class="nx">FILLED</span><span class="p">)</span>
+        <span class="nx">cv2</span><span class="p">.</span><span class="nx">line</span><span class="p">(</span><span class="nx">img</span><span class="p">,(</span><span class="nx">x1</span><span class="p">,</span><span class="nx">y1</span><span class="p">),(</span><span class="nx">x2</span><span class="p">,</span><span class="nx">y2</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span>
+        <span class="nx">cv2</span><span class="p">.</span><span class="nx">circle</span><span class="p">(</span><span class="nx">img</span><span class="p">,(</span><span class="nx">cx</span><span class="p">,</span><span class="nx">cy</span><span class="p">),</span><span class="mi">15</span><span class="p">,(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">),</span><span class="nx">cv2</span><span class="p">.</span><span class="nx">FILLED</span><span class="p">)</span>
+
+        <span class="nx">length</span><span class="o">=</span><span class="nx">math</span><span class="p">.</span><span class="nx">hypot</span><span class="p">(</span><span class="nx">x2</span><span class="o">-</span><span class="nx">x1</span><span class="p">,</span><span class="nx">y2</span><span class="o">-</span><span class="nx">y1</span><span class="p">)</span>
+
+        <span class="nx">vol</span><span class="o">=</span><span class="nx">np</span><span class="p">.</span><span class="nx">interp</span><span class="p">(</span><span class="nx">length</span><span class="p">,[</span><span class="mi">20</span><span class="p">,</span><span class="mi">180</span><span class="p">],[</span><span class="nx">minVol</span><span class="p">,</span><span class="nx">maxVol</span><span class="p">])</span>
+        <span class="nx">volBar</span><span class="o">=</span><span class="nx">np</span><span class="p">.</span><span class="nx">interp</span><span class="p">(</span><span class="nx">length</span><span class="p">,[</span><span class="mi">20</span><span class="p">,</span><span class="mi">180</span><span class="p">],[</span><span class="mi">400</span><span class="p">,</span><span class="mi">150</span><span class="p">])</span>
+        <span class="nx">volPer</span><span class="o">=</span><span class="nx">np</span><span class="p">.</span><span class="nx">interp</span><span class="p">(</span><span class="nx">length</span><span class="p">,[</span><span class="mi">20</span><span class="p">,</span><span class="mi">180</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">])</span>
+        
+        <span class="nx">volume</span><span class="p">.</span><span class="nx">SetMasterVolumeLevel</span><span class="p">(</span><span class="nx">vol</span><span class="p">,</span> <span class="nx">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nx">length</span><span class="o">&lt;</span><span class="mi">20</span><span class="p">:</span>
+            <span class="nx">cv2</span><span class="p">.</span><span class="nx">circle</span><span class="p">(</span><span class="nx">img</span><span class="p">,(</span><span class="nx">cx</span><span class="p">,</span><span class="nx">cy</span><span class="p">),</span><span class="mi">15</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="nx">cv2</span><span class="p">.</span><span class="nx">FILLED</span><span class="p">)</span>
+    
+    <span class="nx">cv2</span><span class="p">.</span><span class="nx">rectangle</span><span class="p">(</span><span class="nx">img</span><span class="p">,(</span><span class="mi">50</span><span class="p">,</span><span class="mi">150</span><span class="p">),(</span><span class="mi">85</span><span class="p">,</span><span class="mi">400</span><span class="p">),(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span>
+    <span class="nx">cv2</span><span class="p">.</span><span class="nx">rectangle</span><span class="p">(</span><span class="nx">img</span><span class="p">,(</span><span class="mi">50</span><span class="p">,</span><span class="nx">int</span><span class="p">(</span><span class="nx">volBar</span><span class="p">)),(</span><span class="mi">85</span><span class="p">,</span><span class="mi">400</span><span class="p">),(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="nx">cv2</span><span class="p">.</span><span class="nx">FILLED</span><span class="p">)</span>
+    <span class="nx">cv2</span><span class="p">.</span><span class="nx">putText</span><span class="p">(</span><span class="nx">img</span><span class="p">,</span><span class="nx">f</span><span class="dl">'</span><span class="s1">{int(volPer)}%</span><span class="dl">'</span><span class="p">,(</span><span class="mi">40</span><span class="p">,</span><span class="mi">450</span><span class="p">),</span><span class="nx">cv2</span><span class="p">.</span><span class="nx">FONT_HERSHEY_COMPLEX</span><span class="p">,</span><span class="mi">1</span><span class="p">,(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span>
+    
+    <span class="nx">ctime</span><span class="o">=</span><span class="nx">time</span><span class="p">.</span><span class="nx">time</span><span class="p">()</span>
+    <span class="nx">fps</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="nx">ctime</span><span class="o">-</span><span class="nx">ptime</span><span class="p">)</span>
+    <span class="nx">ptime</span><span class="o">=</span><span class="nx">ctime</span>
+    
+    <span class="nx">cv2</span><span class="p">.</span><span class="nx">putText</span><span class="p">(</span><span class="nx">img</span><span class="p">,</span><span class="nx">f</span><span class="dl">"</span><span class="s2">Fps : {int(fps)}</span><span class="dl">"</span><span class="p">,(</span><span class="mi">40</span><span class="p">,</span><span class="mi">70</span><span class="p">),</span><span class="nx">cv2</span><span class="p">.</span><span class="nx">FONT_HERSHEY_COMPLEX</span><span class="p">,</span><span class="mi">1</span><span class="p">,(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nx">img</span> <span class="nx">is</span> <span class="nx">not</span> <span class="nx">None</span><span class="p">:</span>
+        <span class="nx">cv2</span><span class="p">.</span><span class="nx">imshow</span><span class="p">(</span><span class="dl">'</span><span class="s1">frame</span><span class="dl">'</span><span class="p">,</span><span class="nx">img</span><span class="p">)</span>
+    
+    <span class="nx">q</span><span class="o">=</span><span class="nx">cv2</span><span class="p">.</span><span class="nx">waitKey</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nx">time</span><span class="p">.</span><span class="nx">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">q</span><span class="o">==</span><span class="nx">ord</span><span class="p">(</span><span class="dl">"</span><span class="s2">q</span><span class="dl">"</span><span class="p">):</span>
+        <span class="k">break</span>
+
+<span class="nx">cv2</span><span class="p">.</span><span class="nx">destroyAllWindows</span><span class="p">()</span> </code></pre></figure>
+
+<p>We start by reading image from webcam, giving it to findHands functions and giving the resulting image to findPosition function which gives us list of landmarks with id.
+Then we extract co-ordinates of tips of thumb and index finger which have id 4 and 8 respectively(refer to image of hand above).
+Their co-ordinates are stored on 1st and 2nd index respectively</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">x1</span><span class="p">,</span><span class="nx">y1</span><span class="o">=</span><span class="nx">lmlist</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="nx">lmlist</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span></code></pre></figure>
+
+<p>We then calculate length of the line which joins landmark 4 and landmark 8</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">length</span><span class="o">=</span><span class="nx">math</span><span class="p">.</span><span class="nx">hypot</span><span class="p">(</span><span class="nx">x2</span><span class="o">-</span><span class="nx">x1</span><span class="p">,</span><span class="nx">y2</span><span class="o">-</span><span class="nx">y1</span><span class="p">)</span></code></pre></figure>
+
+<p>The length is calculated so that we can use it to change the volume (if index and thumb are touching each other then the volume is set to zero as he length is zero ,when index finger and thumb are wide open then the volume is set to max )</p>
+
+<p>Note: you can print out vales of l1 and l2(i.e of thumb and index finger ) and set it to values with which you are comfortable.
+Like here the values are 20 and 180 .
+Next line of code converts values proportionate for our volume level/range.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">vol</span><span class="o">=</span><span class="nx">np</span><span class="p">.</span><span class="nx">interp</span><span class="p">(</span><span class="nx">length</span><span class="p">,[</span><span class="mi">20</span><span class="p">,</span><span class="mi">180</span><span class="p">],[</span><span class="nx">minVol</span><span class="p">,</span><span class="nx">maxVol</span><span class="p">])</span></code></pre></figure>
+
+<p>Similarly we prepare volBAr and volPer to show the bar of volume and its percentage</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">volBar</span><span class="o">=</span><span class="nx">np</span><span class="p">.</span><span class="nx">interp</span><span class="p">(</span><span class="nx">length</span><span class="p">,[</span><span class="mi">20</span><span class="p">,</span><span class="mi">180</span><span class="p">],[</span><span class="mi">400</span><span class="p">,</span><span class="mi">150</span><span class="p">])</span>
+<span class="nx">volPer</span><span class="o">=</span><span class="nx">np</span><span class="p">.</span><span class="nx">interp</span><span class="p">(</span><span class="nx">length</span><span class="p">,[</span><span class="mi">20</span><span class="p">,</span><span class="mi">180</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">])</span></code></pre></figure>
+
+<p>Once the correct volume value is obtained it can be used to set system value</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">volume</span><span class="p">.</span><span class="nx">SetMasterVolumeLevel</span><span class="p">(</span><span class="nx">vol</span><span class="p">,</span> <span class="nx">None</span><span class="p">)</span></code></pre></figure>
+
+<p>The next lines are to show the VolBar , percentage and showing tips of index finger and thumb nicely.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="k">if</span> <span class="nx">length</span><span class="o">&lt;</span><span class="mi">20</span><span class="p">:</span>
+            <span class="nx">cv2</span><span class="p">.</span><span class="nx">circle</span><span class="p">(</span><span class="nx">img</span><span class="p">,(</span><span class="nx">cx</span><span class="p">,</span><span class="nx">cy</span><span class="p">),</span><span class="mi">15</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="nx">cv2</span><span class="p">.</span><span class="nx">FILLED</span><span class="p">)</span>
+    
+    <span class="nx">cv2</span><span class="p">.</span><span class="nx">rectangle</span><span class="p">(</span><span class="nx">img</span><span class="p">,(</span><span class="mi">50</span><span class="p">,</span><span class="mi">150</span><span class="p">),(</span><span class="mi">85</span><span class="p">,</span><span class="mi">400</span><span class="p">),(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span>
+    <span class="nx">cv2</span><span class="p">.</span><span class="nx">rectangle</span><span class="p">(</span><span class="nx">img</span><span class="p">,(</span><span class="mi">50</span><span class="p">,</span><span class="nx">int</span><span class="p">(</span><span class="nx">volBar</span><span class="p">)),(</span><span class="mi">85</span><span class="p">,</span><span class="mi">400</span><span class="p">),(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="nx">cv2</span><span class="p">.</span><span class="nx">FILLED</span><span class="p">)</span>
+    <span class="nx">cv2</span><span class="p">.</span><span class="nx">putText</span><span class="p">(</span><span class="nx">img</span><span class="p">,</span><span class="nx">f</span><span class="dl">'</span><span class="s1">{int(volPer)}%</span><span class="dl">'</span><span class="p">,(</span><span class="mi">40</span><span class="p">,</span><span class="mi">450</span><span class="p">),</span><span class="nx">cv2</span><span class="p">.</span><span class="nx">FONT_HERSHEY_COMPLEX</span><span class="p">,</span><span class="mi">1</span><span class="p">,(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span></code></pre></figure>
+
+<p>Frames per seconds are then calculated using the formula below and displayed on the screen</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js">    <span class="nx">ctime</span><span class="o">=</span><span class="nx">time</span><span class="p">.</span><span class="nx">time</span><span class="p">()</span>
+    <span class="nx">fps</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="nx">ctime</span><span class="o">-</span><span class="nx">ptime</span><span class="p">)</span>
+    <span class="nx">ptime</span><span class="o">=</span><span class="nx">ctime</span>
+    
+    <span class="nx">cv2</span><span class="p">.</span><span class="nx">putText</span><span class="p">(</span><span class="nx">img</span><span class="p">,</span><span class="nx">f</span><span class="dl">"</span><span class="s2">Fps : {int(fps)}</span><span class="dl">"</span><span class="p">,(</span><span class="mi">40</span><span class="p">,</span><span class="mi">70</span><span class="p">),</span><span class="nx">cv2</span><span class="p">.</span><span class="nx">FONT_HERSHEY_COMPLEX</span><span class="p">,</span><span class="mi">1</span><span class="p">,(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span></code></pre></figure>
+
+<p>this is pretty much the code and when you run it ,you can see volume changing smoothly without lag.</p>
+
+<p>The idea of the article was to introduce this super awesome library and now the rest is up to your creativity .You can find code for the project here.</p>
+
+<p>Thanks to Murtaza Hasan from where I came to know about this library. This project is also inspired by his projects and videos. You can check his  website for some cool projects.</p>
+
+
+        </section>
+        <footer class="post-footer">
+          <section class="share">
+            
+              
+                <a class="icon-twitter" href="http://twitter.com/share?text=Hand+Gesture+based+Volume+Control+&amp;url=http://localhost:4000/jekyll/update/2021/08/29/welcome-to-jekyll"
+                  onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+                <i class="fa fa-twitter"></i><span class="hidden">twitter</span>
+                </a>
+              
+            
+              
+            
+          </section>
+        </footer>
+        <div class="bottom-teaser cf">
+          <div class="isLeft">
+            <h5 class="index-headline featured"><span>Written by</span></h5>
+            <section class="author">
+              <div class="author-image" style="background-image: url(images/author.jpg)">Blog Logo</div>
+              <h4>Shivam Sharma</h4>
+              <p class="bio"></p>
+                </section>
+          </div>
+          
+          <!-- <div class="isRight">
+            <h5 class="index-headline featured"><span>Supported by</span></h5>
+            <footer class="site-footer">
+              <section class="poweredby">Proudly published with <a href="http://jekyllrb.com"> Jekyll</a></section>
+              <a class="subscribe" href="/feed.xml"> <span class="tooltip"> <i class="fa fa-rss"></i> You should subscribe to my feed.</span></a>
+              <div class="inner">
+                <section class="copyright">All content copyright <a href="/">Shivam Sharma</a> &copy; 2021<br>All rights reserved.</section>
+              </div>
+            </footer>
+          </div> -->
+        </div>
+        
+      </article>
+    </main>
+    <div class="bottom-closer">
+      <div class="background-closer-image"  style="background-image: url(images/cA4aKEIPQrerBnp1yGHv_IMG_9534-3-2.jpg)">
+        Image
+      </div>
+      <div class="inner">
+        
+</h2>
+      
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+<script type="text/javascript" src="js/readingTime.min.js"></script>
+<script>
+(function ($) {
+  "use strict";
+  $(document).ready(function(){
+
+    var $window = $(window),
+    $image = $('.post-image-image, .teaserimage-image');
+    
+      $window.on('scroll', function() {
+        var top = $window.scrollTop();
+
+        if (top < 0 || top > 1500) { return; }
+        $image
+          .css('transform', 'translate3d(0px, '+top/3+'px, 0px)')
+          .css('opacity', 1-Math.max(top/700, 0));
+      });
+      $window.trigger('scroll');
+
+      var height = $('.article-image').height();
+      $('.post-content').css('padding-top', height + 'px');
+
+      $('a[href*=#]:not([href=#])').click(function() {
+        if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'')
+         && location.hostname == this.hostname) {
+          var target = $(this.hash);
+          target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+          if (target.length) {
+            $('html,body').animate({ scrollTop: target.offset().top }, 500);
+            return false;
+          }
+        }
+      });
+
+  });
+}(jQuery));
+</script>
+
+
+  </body>
+</html>
